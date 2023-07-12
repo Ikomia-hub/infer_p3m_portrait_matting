@@ -45,10 +45,20 @@ class InferP3mPortraitMattingWidget(core.CWorkflowTaskWidget):
         # PyQt -> Qt wrapping
         layout_ptr = qtconversion.PyQtToQt(self.grid_layout)
 
+        # CUDA
         self.check_cuda = pyqtutils.append_check(
             self.grid_layout, "Cuda", self.parameters.cuda and is_available())
         self.check_cuda.setEnabled(is_available())
 
+        # Model name
+        self.combo_model = pyqtutils.append_combo(
+            self.grid_layout, "Model name")
+        self.combo_model.addItem("resnet34")
+        self.combo_model.addItem("vitae-s")
+
+        self.combo_model.setCurrentText(self.parameters.model_name)
+
+        # Input size
         self.spin_input_size = pyqtutils.append_spin(self.grid_layout,
                                                      "input size",
                                                      self.parameters.input_size,
@@ -60,9 +70,9 @@ class InferP3mPortraitMattingWidget(core.CWorkflowTaskWidget):
     def on_apply(self):
         # Apply button clicked slot
         self.parameters.update = True
+        self.parameters.model_name = self.combo_model.currentText()
         self.parameters.cuda = self.check_cuda.isChecked()
         self.parameters.input_size = self.spin_input_size.value()
-
         self.emit_apply(self.parameters)
 
 

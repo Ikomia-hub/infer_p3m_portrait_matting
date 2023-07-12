@@ -26,6 +26,7 @@ from tqdm import tqdm
 from skimage.transform import resize
 from torchvision import transforms
 import numpy as np
+import gdown
 
 
 # --------------------
@@ -37,6 +38,7 @@ class InferP3mPortraitMattingParam(core.CWorkflowTaskParam):
     def __init__(self):
         core.CWorkflowTaskParam.__init__(self)
         # Place default value initialization here
+        self.model_name = "resnet34"
         self.cuda = torch.cuda.is_available()
         self.input_size = 1024
         self.update = False
@@ -44,6 +46,7 @@ class InferP3mPortraitMattingParam(core.CWorkflowTaskParam):
     def set_values(self, param_map):
         # Set parameters values from Ikomia application
         # Parameters values are stored as string and accessible like a python dict
+        self.model_name = param_map["model_name"]
         self.cuda = utils.strtobool(param_map["cuda"])
         self.input_size = int(param_map["input_size"])
         self.update = True
@@ -52,6 +55,7 @@ class InferP3mPortraitMattingParam(core.CWorkflowTaskParam):
         # Send parameters values to Ikomia application
         # Create the specific dict structure (string container)
         param_map = {}
+        param_map["model_name"] = str(self.model_name)
         param_map["cuda"] = str(self.cuda)
         param_map["input_size"] = str(self.input_size)
         return param_map
@@ -74,15 +78,55 @@ class InferP3mPortraitMatting(dataprocess.C2dImageTask):
         else:
             self.set_param_object(copy.deepcopy(param))
 
-        self.model_weight_url = 'https://drive.google.com/uc?export=download&id=1smX2YQGIpzKbfwDYHAwete00a_YMwoG1'
-        self.model_name = 'p3mnet_pretrained_on_p3m10k.pth'
+        self.model_url_resnet = 'https://drive.google.com/uc?export=download&id=1smX2YQGIpzKbfwDYHAwete00a_YMwoG1'
+        self.model_url_vitae = 'https://drive.google.com/u/0/uc?id=1QbSjPA_Mxs7rITp_a9OJiPeFRDwxemqK&export=download'
+
+        self.model_name_resnet = 'p3mnet_pretrained_on_p3m10k.pth'
+        self.model_name_vitae = 'P3M-Net_ViTAE-S_trained_on_P3M-10k.pth'
         self.device = torch.device("cpu")
         self.model = None
+
+        self.model_weight_url = 'https://drive.google.com/uc?export=download&id=1smX2YQGIpzKbfwDYHAwete00a_YMwoG1'
+        self.model_name = 'p3mnet_pretrained_on_p3m10k.pth'
 
     def get_progress_steps(self):
         # Function returning the number of progress steps for this process
         # This is handled by the main progress bar of Ikomia application
         return 1
+
+    def load_model(self):
+        # Get parameters :
+        param = self.get_param_object()
+
+        # Get model name and link
+        if param.model_name == 'vitae-s':
+            model_file_name = self.model_name_vitae
+            model_url = self.model_url_vitae
+        else:
+            model_file_name = self.model_name_resnet
+            model_url = self.model_url_resnet
+
+        # Set path
+        model_folder = os.path.join(os.path.dirname(
+            os.path.realpath(__file__)), "weights")
+        model_weights = os.path.join(str(model_folder), model_file_name)
+
+        # Download model if not exist
+        if not os.path.isfile(model_weights):
+            os.makedirs(model_folder, exist_ok=True)
+            gdown.download(model_url, model_weights, quiet=False)
+
+        if param.model_name == 'vitae-s':
+            self.model = build_model('vitae', pretrained=False)
+        else:
+            self.model = build_model('r34', pretrained=False)
+        # load ckpt
+        ckpt = torch.load(model_weights)
+        self.model.load_state_dict(ckpt['state_dict'], strict=True)
+        if param.cuda:
+            self.model = self.model.cuda()
+
+        return self.model
 
     def inference_once(self, model, scale_img):
         param = self.get_param_object()
@@ -154,33 +198,7 @@ class InferP3mPortraitMatting(dataprocess.C2dImageTask):
 
         # Load model
         if param.update or self.model is None:
-            # Set folder path
-            model_folder = os.path.join(os.path.dirname(
-                os.path.realpath(__file__)), "weights")
-            model_weights = os.path.join(str(model_folder), self.model_name)
-
-            # Download model if not exist
-            if not os.path.isfile(model_weights):
-                os.makedirs(model_folder, exist_ok=True)
-                print(f"Downloading {self.model_name} model...")
-                response = requests.get(self.model_weight_url, stream=True)
-                total_size = int(response.headers.get('content-length', 0))
-                block_size = 1024
-                progress_bar = tqdm(
-                    total=total_size, unit='B', unit_scale=True)
-
-                with open(model_weights, 'wb') as f:
-                    for data in response.iter_content(block_size):
-                        progress_bar.update(len(data))
-                        f.write(data)
-                progress_bar.close()
-
-            self.model = build_model('r34', pretrained=False)
-            # load ckpt
-            ckpt = torch.load(model_weights)
-            self.model.load_state_dict(ckpt['state_dict'], strict=True)
-            if param.cuda:
-                self.model = self.model.cuda()
+            self.model = self.load_model()
 
         # Run inference
         bin_img, portrait = self.inference_hybrid(
