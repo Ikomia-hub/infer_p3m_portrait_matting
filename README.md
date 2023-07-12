@@ -20,6 +20,7 @@ det.set_parameters({
     "input_size" : "1024", # stride of 32
     "cuda" : "True"})
 
+# Run workflow on the image
 wf.run_on(url="https://raw.githubusercontent.com/Ikomia-dev/notebooks/main/examples/img/img_portrait.jpg")
 
 # Inspect your results
