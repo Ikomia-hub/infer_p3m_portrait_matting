@@ -216,9 +216,9 @@ class InferP3mPortraitMattingFactory(dataprocess.CTaskFactory):
         self.info.short_description = "Inference of Privacy-Preserving Portrait Matting (P3M)"
         self.info.description = "This algorithm proposes inference with Privacy-Preserving Portrait Matting (P3M) model."
         # relative path -> as displayed in Ikomia application process tree
-        self.info.path = "Plugins/Python"
+        self.info.path = "Plugins/Python/Background"
         self.info.version = "1.0.0"
-        # self.info.icon_path = "your path to a specific icon"
+        self.info.icon_path = "icons/icon.png"
         self.info.authors = "Li, Jizhizi and Ma, Sihan and Zhang, Jing and Tao, Dacheng"
         self.info.article = "Privacy-Preserving Portrait Matting"
         self.info.journal = "Association for Computing Machinery"
@@ -229,7 +229,7 @@ class InferP3mPortraitMattingFactory(dataprocess.CTaskFactory):
         # Code source repository
         self.info.repository = "https://github.com/JizhiziLi/P3M"
         # Keywords used for search
-        self.info.keywords = "Portrait matting,Privacy-preserving, Semantic segmentation, Trimap"
+        self.info.keywords = "Portrait matting, Privacy-preserving, Semantic segmentation, Trimap"
 
     def create(self, param=None):
         # Create process object
