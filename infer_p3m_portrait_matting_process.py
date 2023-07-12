@@ -85,7 +85,8 @@ class InferP3mPortraitMatting(dataprocess.C2dImageTask):
         return 1
 
     def inference_once(self, model, scale_img):
-        if torch.cuda.device_count() > 0:
+        param = self.get_param_object()
+        if param.cuda:
             tensor_img = torch.from_numpy(scale_img.astype(
                 np.float32)[:, :, :]).permute(2, 0, 1).cuda()
         else:
@@ -153,9 +154,6 @@ class InferP3mPortraitMatting(dataprocess.C2dImageTask):
 
         # Load model
         if param.update or self.model is None:
-            self.device = torch.device(
-                "cuda") if param.cuda else torch.device("cpu")
-
             # Set folder path
             model_folder = os.path.join(os.path.dirname(
                 os.path.realpath(__file__)), "weights")
@@ -181,8 +179,8 @@ class InferP3mPortraitMatting(dataprocess.C2dImageTask):
             # load ckpt
             ckpt = torch.load(model_weights)
             self.model.load_state_dict(ckpt['state_dict'], strict=True)
-
-            self.model = self.model.cuda()
+            if param.cuda:
+                self.model = self.model.cuda()
 
         # Run inference
         bin_img, portrait = self.inference_hybrid(
