@@ -220,16 +220,16 @@ class InferP3mPortraitMattingFactory(dataprocess.CTaskFactory):
         self.info.version = "1.0.0"
         # self.info.icon_path = "your path to a specific icon"
         self.info.authors = "Li, Jizhizi and Ma, Sihan and Zhang, Jing and Tao, Dacheng"
-        self.info.article = "title of associated research article"
-        self.info.journal = "publication journal"
-        self.info.year = 2023
+        self.info.article = "Privacy-Preserving Portrait Matting"
+        self.info.journal = "Association for Computing Machinery"
+        self.info.year = 2021
         self.info.license = "MIT License"
         # URL of documentation
-        self.info.documentation_link = ""
+        self.info.documentation_link = "https://arxiv.org/pdf/2104.14222.pdf"
         # Code source repository
-        self.info.repository = ""
+        self.info.repository = "https://github.com/JizhiziLi/P3M"
         # Keywords used for search
-        self.info.keywords = "Portrait matting, Privacy,here"
+        self.info.keywords = "Portrait matting,Privacy-preserving, Semantic segmentation, Trimap"
 
     def create(self, param=None):
         # Create process object
