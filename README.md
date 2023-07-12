@@ -14,9 +14,16 @@ wf = Workflow()
 # Add the p3m process to the workflow
 det = wf.add_task(name="infer_p3m_portrait_matting", auto_connect=True)
 
+# Set process parameters
+det.set_parameters({
+    "model_name" : "resnet34", # "vitae-s" or "resnet34"
+    "input_size" : "1024", # stride of 32
+    "cuda" : "True"})
+
 wf.run_on(url="https://raw.githubusercontent.com/Ikomia-dev/notebooks/main/examples/img/img_portrait.jpg")
 
 # Inspect your results
+display(det.get_input(0))
 display(det.get_output(1))
 
 ```
