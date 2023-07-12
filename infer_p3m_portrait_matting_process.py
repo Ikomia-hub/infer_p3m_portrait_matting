@@ -17,12 +17,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import copy
-from ikomia import core, dataprocess
+from ikomia import core, dataprocess, utils
 import torch
 from infer_p3m_portrait_matting.p3m.core.network import build_model
 from infer_p3m_portrait_matting.p3m.core.util import *
 import os
-from tqdm import tqdm
 from skimage.transform import resize
 from torchvision import transforms
 import numpy as np
