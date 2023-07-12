@@ -234,15 +234,15 @@ class InferP3mPortraitMattingFactory(dataprocess.CTaskFactory):
         self.info.path = "Plugins/Python/Background"
         self.info.version = "1.0.0"
         self.info.icon_path = "icons/icon.png"
-        self.info.authors = "Li, Jizhizi and Ma, Sihan and Zhang, Jing and Tao, Dacheng"
-        self.info.article = "Privacy-Preserving Portrait Matting"
-        self.info.journal = "Association for Computing Machinery"
-        self.info.year = 2021
+        self.info.authors = "Ma, Sihan and Li, Jizhizi and Zhang, Jing and Zhang, He and Tao, Dacheng"
+        self.info.article = "Rethinking Portrait Matting with Pirvacy Preserving"
+        self.info.journal = "International Journal of Computer Vision"
+        self.info.year = 2023
         self.info.license = "MIT License"
         # URL of documentation
         self.info.documentation_link = "https://arxiv.org/pdf/2104.14222.pdf"
         # Code source repository
-        self.info.repository = "https://github.com/JizhiziLi/P3M"
+        self.info.repository = "https://github.com/ViTAE-Transformer/P3M-Net"
         # Keywords used for search
         self.info.keywords = "Portrait matting, Privacy-preserving, Semantic segmentation, Trimap"
 

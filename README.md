@@ -32,23 +32,15 @@ display(det.get_output(1))
 
 ## :black_nib: Citation
 
-[Code source](https://github.com/JizhiziLi/P3M) 
+[Code source](https://github.com/ViTAE-Transformer/P3M-Net) 
 
 ```bibtex
-@inproceedings{10.1145/3474085.3475512,
-author = {Li, Jizhizi and Ma, Sihan and Zhang, Jing and Tao, Dacheng},
-title = {Privacy-Preserving Portrait Matting},
-year = {2021},
-isbn = {9781450386517},
-publisher = {Association for Computing Machinery},
-address = {New York, NY, USA},
-url = {https://doi.org/10.1145/3474085.3475512},
-doi = {10.1145/3474085.3475512},
-booktitle = {Proceedings of the 29th ACM International Conference on Multimedia},
-pages = {3501–3509},
-numpages = {9},
-keywords = {trimap, benchmark, portrait matting, deep learning, semantic segmentation, privacy-preserving},
-location = {Virtual Event, China},
-series = {MM '21}
+@article{rethink_p3m,
+  title={Rethinking Portrait Matting with Pirvacy Preserving},
+  author={Ma, Sihan and Li, Jizhizi and Zhang, Jing and Zhang, He and Tao, Dacheng},
+  journal={International Journal of Computer Vision},
+  publisher={Springer},
+  ISSN={1573-1405},
+  year={2023}
 }
 ```
