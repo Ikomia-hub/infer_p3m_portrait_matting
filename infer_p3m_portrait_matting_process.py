@@ -85,9 +85,6 @@ class InferP3mPortraitMatting(dataprocess.C2dImageTask):
         self.device = torch.device("cpu")
         self.model = None
 
-        self.model_weight_url = 'https://drive.google.com/uc?export=download&id=1smX2YQGIpzKbfwDYHAwete00a_YMwoG1'
-        self.model_name = 'p3mnet_pretrained_on_p3m10k.pth'
-
     def get_progress_steps(self):
         # Function returning the number of progress steps for this process
         # This is handled by the main progress bar of Ikomia application
