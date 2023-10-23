@@ -119,14 +119,14 @@ class InferP3mPortraitMatting(dataprocess.C2dImageTask):
         # load ckpt
         ckpt = torch.load(model_weights)
         self.model.load_state_dict(ckpt['state_dict'], strict=True)
-        if param.cuda:
+        if torch.cuda.is_available() and param.cuda:
             self.model = self.model.cuda()
 
         return self.model
 
     def inference_once(self, model, scale_img):
         param = self.get_param_object()
-        if param.cuda:
+        if torch.cuda.is_available() and param.cuda:
             tensor_img = torch.from_numpy(scale_img.astype(
                 np.float32)[:, :, :]).permute(2, 0, 1).cuda()
         else:
@@ -226,7 +226,6 @@ class InferP3mPortraitMattingFactory(dataprocess.CTaskFactory):
         # Set process information as string here
         self.info.name = "infer_p3m_portrait_matting"
         self.info.short_description = "Inference of Privacy-Preserving Portrait Matting (P3M)"
-        self.info.description = "This algorithm proposes inference with Privacy-Preserving Portrait Matting (P3M) model."
         # relative path -> as displayed in Ikomia application process tree
         self.info.path = "Plugins/Python/Background"
         self.info.version = "1.0.0"
@@ -242,6 +241,8 @@ class InferP3mPortraitMattingFactory(dataprocess.CTaskFactory):
         self.info.repository = "https://github.com/ViTAE-Transformer/P3M-Net"
         # Keywords used for search
         self.info.keywords = "Portrait matting, Privacy-preserving, Semantic segmentation, Trimap"
+        self.info.algo_type = core.AlgoType.INFER
+        self.info.algo_tasks = "IMAGE_MATTING"
 
     def create(self, param=None):
         # Create process object
