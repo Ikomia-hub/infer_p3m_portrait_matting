@@ -45,7 +45,7 @@ wf = Workflow()
 algo = wf.add_task(name = 'infer_p3m_portrait_matting', auto_connect=True)
 
 # Run on your image  
-wf.run_on(url="https://github.com/sczhou/CodeFormer/blob/master/inputs/whole_imgs/03.jpg?raw=true")
+wf.run_on(url="https://raw.githubusercontent.com/Ikomia-dev/notebooks/main/examples/img/img_portrait.jpg")
 
 # Inspect your results
 display(algo.get_input(0).get_image())
