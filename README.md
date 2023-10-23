@@ -1,8 +1,69 @@
-# infer_p3m_portrait_matting
+<div align="center">
+  <img src="https://raw.githubusercontent.com/Ikomia-hub/infer_p3m_portrait_matting/main/icons/icon.png" alt="Algorithm icon">
+  <h1 align="center">infer_p3m_portrait_matting</h1>
+</div>
+<br />
+<p align="center">
+    <a href="https://github.com/Ikomia-hub/infer_p3m_portrait_matting">
+        <img alt="Stars" src="https://img.shields.io/github/stars/Ikomia-hub/infer_p3m_portrait_matting">
+    </a>
+    <a href="https://app.ikomia.ai/hub/">
+        <img alt="Website" src="https://img.shields.io/website/http/app.ikomia.ai/en.svg?down_color=red&down_message=offline&up_message=online">
+    </a>
+    <a href="https://github.com/Ikomia-hub/infer_p3m_portrait_matting/blob/main/LICENSE.md">
+        <img alt="GitHub" src="https://img.shields.io/github/license/Ikomia-hub/infer_p3m_portrait_matting.svg?color=blue">
+    </a>    
+    <br>
+    <a href="https://discord.com/invite/82Tnw9UGGc">
+        <img alt="Discord community" src="https://img.shields.io/badge/Discord-white?style=social&logo=discord">
+    </a> 
+</p>
 
+This algorithm proposes inference with Privacy-Preserving Portrait Matting (P3M) model.
 
-## :rocket: Run with Ikomia API
+![Face restoration codeformer](https://github.com/ViTAE-Transformer/P3M-Net/raw/main/demo/p3m_dataset.png)
 
+## :rocket: Use with Ikomia API
+
+#### 1. Install Ikomia API
+
+We strongly recommend using a virtual environment. If you're not sure where to start, we offer a tutorial [here](https://www.ikomia.ai/blog/a-step-by-step-guide-to-creating-virtual-environments-in-python).
+
+```sh
+pip install ikomia
+```
+
+#### 2. Create your workflow
+
+```python
+from ikomia.dataprocess.workflow import Workflow
+from ikomia.utils.displayIO import display
+# Init your workflow
+wf = Workflow()    
+
+# Add the real_esrgan algorithm
+algo = wf.add_task(name = 'infer_p3m_portrait_matting', auto_connect=True)
+
+# Run on your image  
+wf.run_on(url="https://github.com/sczhou/CodeFormer/blob/master/inputs/whole_imgs/03.jpg?raw=true")
+
+# Inspect your results
+display(algo.get_input(0).get_image())
+display(algo.get_output(0).get_image())
+```
+
+## :sunny: Use with Ikomia Studio
+
+Ikomia Studio offers a friendly UI with the same features as the API.
+
+- If you haven't started using Ikomia Studio yet, download and install it from [this page](https://www.ikomia.ai/studio).
+
+- For additional guidance on getting started with Ikomia Studio, check out [this blog post](https://www.ikomia.ai/blog/how-to-get-started-with-ikomia-studio).
+
+## :pencil: Set algorithm parameters
+- **model_name** (str) - default 'resnet34':  Name of the model, resnet34 or vitae-s
+- **input_size** (int) - default: '1024': Size of the input image (stride of 32)
+- **cuda** (bool): If True, CUDA-based inference (GPU). If False, run on CPU.
 
 ```python
 from ikomia.dataprocess.workflow import Workflow
@@ -12,12 +73,12 @@ from ikomia.utils.displayIO import display
 wf = Workflow()    
 
 # Add the p3m process to the workflow
-det = wf.add_task(name="infer_p3m_portrait_matting", auto_connect=True)
+algo = wf.add_task(name="infer_p3m_portrait_matting", auto_connect=True)
 
 # Set process parameters
-det.set_parameters({
-    "model_name" : "resnet34", # "vitae-s" or "resnet34"
-    "input_size" : "1024", # stride of 32
+algo.set_parameters({
+    "model_name" : "resnet34",
+    "input_size" : "1024",
     "cuda" : "True"})
 
 # Run workflow on the image
@@ -26,21 +87,30 @@ wf.run_on(url="https://raw.githubusercontent.com/Ikomia-dev/notebooks/main/examp
 # Inspect your results
 display(det.get_input(0))
 display(det.get_output(1))
-
 ```
 
+## :mag: Explore algorithm outputs
 
-## :black_nib: Citation
+Every algorithm produces specific outputs, yet they can be explored them the same way using the Ikomia API. For a more in-depth understanding of managing algorithm outputs, please refer to the [documentation](https://ikomia-dev.github.io/python-api-documentation/advanced_guide/IO_management.html).
 
-[Code source](https://github.com/ViTAE-Transformer/P3M-Net) 
+```python
+import ikomia
+from ikomia.dataprocess.workflow import Workflow
 
-```bibtex
-@article{rethink_p3m,
-  title={Rethinking Portrait Matting with Pirvacy Preserving},
-  author={Ma, Sihan and Li, Jizhizi and Zhang, Jing and Zhang, He and Tao, Dacheng},
-  journal={International Journal of Computer Vision},
-  publisher={Springer},
-  ISSN={1573-1405},
-  year={2023}
-}
+# Init your workflow
+wf = Workflow()
+
+# Add algorithm
+algo = wf.add_task(name="infer_p3m_portrait_matting", auto_connect=True)
+
+# Run on your image  
+wf.run_on(url="https://raw.githubusercontent.com/Ikomia-dev/notebooks/main/examples/img/img_portrait.jpg")
+
+# Iterate over outputs
+for output in algo.get_outputs():
+    # Print information
+    print(output)
+    # Export it to JSON
+    output.to_json()
 ```
+
