@@ -82,7 +82,7 @@ class InferP3mPortraitMatting(dataprocess.C2dImageTask):
 
         self.model_name_resnet = 'p3mnet_pretrained_on_p3m10k.pth'
         self.model_name_vitae = 'P3M-Net_ViTAE-S_trained_on_P3M-10k.pth'
-        self.device = torch.device("cpu")
+        self.cuda = False
         self.model = None
 
     def get_progress_steps(self):
@@ -119,14 +119,13 @@ class InferP3mPortraitMatting(dataprocess.C2dImageTask):
         # load ckpt
         ckpt = torch.load(model_weights)
         self.model.load_state_dict(ckpt['state_dict'], strict=True)
-        if torch.cuda.is_available() and param.cuda:
+        if self.cuda:
             self.model = self.model.cuda()
 
         return self.model
 
     def inference_once(self, model, scale_img):
-        param = self.get_param_object()
-        if torch.cuda.is_available() and param.cuda:
+        if self.cuda:
             tensor_img = torch.from_numpy(scale_img.astype(
                 np.float32)[:, :, :]).permute(2, 0, 1).cuda()
         else:
@@ -194,6 +193,7 @@ class InferP3mPortraitMatting(dataprocess.C2dImageTask):
 
         # Load model
         if param.update or self.model is None:
+            self.cuda = True if torch.cuda.is_available() and param.cuda else False
             self.model = self.load_model()
 
         # Run inference
