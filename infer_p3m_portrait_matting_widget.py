@@ -58,6 +58,15 @@ class InferP3mPortraitMattingWidget(core.CWorkflowTaskWidget):
 
         self.combo_model.setCurrentText(self.parameters.model_name)
 
+        # Method
+        self.combo_method = pyqtutils.append_combo(
+            self.grid_layout, "Method")
+        self.combo_method.addItem("HYBRID")
+        self.combo_method.addItem("RESIZE")
+
+        self.combo_method.setCurrentText(self.parameters.method)
+
+
         # Input size
         self.spin_input_size = pyqtutils.append_spin(self.grid_layout,
                                                      "input size",
@@ -71,6 +80,7 @@ class InferP3mPortraitMattingWidget(core.CWorkflowTaskWidget):
         # Apply button clicked slot
         self.parameters.update = True
         self.parameters.model_name = self.combo_model.currentText()
+        self.parameters.method = self.combo_method.currentText()
         self.parameters.cuda = self.check_cuda.isChecked()
         self.parameters.input_size = self.spin_input_size.value()
         self.emit_apply(self.parameters)

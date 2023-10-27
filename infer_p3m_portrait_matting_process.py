@@ -39,6 +39,7 @@ class InferP3mPortraitMattingParam(core.CWorkflowTaskParam):
         # Place default value initialization here
         self.model_name = "resnet34"
         self.cuda = torch.cuda.is_available()
+        self.method = "HYBRID"
         self.input_size = 1024
         self.update = False
 
@@ -47,6 +48,7 @@ class InferP3mPortraitMattingParam(core.CWorkflowTaskParam):
         # Parameters values are stored as string and accessible like a python dict
         self.model_name = param_map["model_name"]
         self.cuda = utils.strtobool(param_map["cuda"])
+        self.method = param_map["method"]
         self.input_size = int(param_map["input_size"])
         self.update = True
 
@@ -56,6 +58,7 @@ class InferP3mPortraitMattingParam(core.CWorkflowTaskParam):
         param_map = {}
         param_map["model_name"] = str(self.model_name)
         param_map["cuda"] = str(self.cuda)
+        param_map["method"] = str(self.method)
         param_map["input_size"] = str(self.input_size)
         return param_map
 
@@ -144,30 +147,43 @@ class InferP3mPortraitMatting(dataprocess.C2dImageTask):
         pred_fusion = pred_fusion.data.cpu().numpy()[0, 0, :, :]
         return pred_global, pred_local, pred_fusion
 
-    def inference_hybrid(self, model, img, max_size):
+    def inference(self, model, img, max_size):
+        param = self.get_param_object()
         h, w, c = img.shape
-        global_ratio = 1/2
-        local_ratio = 1
-        resize_h = int(h*global_ratio)
-        resize_w = int(w*global_ratio)
-        new_h = min(max_size, resize_h - (resize_h % 32))
-        new_w = min(max_size, resize_w - (resize_w % 32))
-        scale_img = resize(img, (new_h, new_w))*255.0
-        pred_coutour_1, pred_retouching_1, pred_fusion_1 = self.inference_once(
-            model, scale_img)
-        # torch.cuda.empty_cache()
-        pred_coutour_1 = resize(pred_coutour_1, (h, w))*255.0
-        resize_h = int(h*local_ratio)
-        resize_w = int(w*local_ratio)
-        new_h = min(max_size, resize_h - (resize_h % 32))
-        new_w = min(max_size, resize_w - (resize_w % 32))
-        scale_img = resize(img, (new_h, new_w))*255.0
-        pred_coutour_2, pred_retouching_2, pred_fusion_2 = self.inference_once(
-            model, scale_img)
-        # torch.cuda.empty_cache()
-        pred_retouching_2 = resize(pred_retouching_2, (h, w))
-        predict = get_masked_local_from_global_test(
-            pred_coutour_1, pred_retouching_2)
+        if param.method=='RESIZE':
+            resize_h = int(h/2)
+            resize_w = int(w/2)
+            new_h = min(max_size, resize_h - (resize_h % 32))
+            new_w = min(max_size, resize_w - (resize_w % 32))
+            scale_img = resize(img,(new_h,new_w))*255.0
+            pred_global, pred_local, pred_fusion = self.inference_once(model, scale_img)
+            pred_local = resize(pred_local,(h,w))
+            pred_global = resize(pred_global,(h,w))*255.0
+            predict = resize(pred_fusion,(h,w))
+
+        if param.method=='HYBRID':
+            global_ratio = 1/2
+            local_ratio = 1
+            resize_h = int(h*global_ratio)
+            resize_w = int(w*global_ratio)
+            new_h = min(max_size, resize_h - (resize_h % 32))
+            new_w = min(max_size, resize_w - (resize_w % 32))
+            scale_img = resize(img, (new_h, new_w))*255.0
+            pred_coutour_1, pred_retouching_1, pred_fusion_1 = self.inference_once(
+                model, scale_img)
+            # torch.cuda.empty_cache()
+            pred_coutour_1 = resize(pred_coutour_1, (h, w))*255.0
+            resize_h = int(h*local_ratio)
+            resize_w = int(w*local_ratio)
+            new_h = min(max_size, resize_h - (resize_h % 32))
+            new_w = min(max_size, resize_w - (resize_w % 32))
+            scale_img = resize(img, (new_h, new_w))*255.0
+            pred_coutour_2, pred_retouching_2, pred_fusion_2 = self.inference_once(
+                model, scale_img)
+            # torch.cuda.empty_cache()
+            pred_retouching_2 = resize(pred_retouching_2, (h, w))
+            predict = get_masked_local_from_global_test(
+                pred_coutour_1, pred_retouching_2)
 
         # Image composite
         img = cv2.cvtColor(img.astype(np.uint8), cv2.COLOR_BGR2RGB)
@@ -197,7 +213,7 @@ class InferP3mPortraitMatting(dataprocess.C2dImageTask):
             self.model = self.load_model()
 
         # Run inference
-        bin_img, portrait = self.inference_hybrid(
+        bin_img, portrait = self.inference(
             self.model, input_image, param.input_size)
         param.update = False
 

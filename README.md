@@ -63,6 +63,7 @@ Ikomia Studio offers a friendly UI with the same features as the API.
 ## :pencil: Set algorithm parameters
 - **model_name** (str) - default 'resnet34':  Name of the model, resnet34 or vitae-s
 - **input_size** (int) - default: '1024': Size of the input image (stride of 32)
+- **method** (str) - default: 'HYBRID': Choice of the inference method 'HYBRID' or 'RESIZE'
 - **cuda** (bool): If True, CUDA-based inference (GPU). If False, run on CPU.
 
 ```python
@@ -79,6 +80,7 @@ algo = wf.add_task(name="infer_p3m_portrait_matting", auto_connect=True)
 algo.set_parameters({
     "model_name" : "resnet34",
     "input_size" : "1024",
+    "method": 'HYBRID',
     "cuda" : "True"})
 
 # Run workflow on the image
