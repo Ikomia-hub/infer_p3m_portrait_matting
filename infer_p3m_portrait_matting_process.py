@@ -122,6 +122,7 @@ class InferP3mPortraitMatting(dataprocess.C2dImageTask):
         # load ckpt
         ckpt = torch.load(model_weights)
         self.model.load_state_dict(ckpt['state_dict'], strict=True)
+        self.model.eval()
         if self.cuda:
             self.model = self.model.cuda()
 
@@ -213,8 +214,9 @@ class InferP3mPortraitMatting(dataprocess.C2dImageTask):
             self.model = self.load_model()
 
         # Run inference
-        bin_img, portrait = self.inference(
-            self.model, input_image, param.input_size)
+        with torch.no_grad():
+            bin_img, portrait = self.inference(
+                self.model, input_image, param.input_size)
         param.update = False
 
         # Set output:
