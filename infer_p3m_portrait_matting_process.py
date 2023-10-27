@@ -240,7 +240,7 @@ class InferP3mPortraitMattingFactory(dataprocess.CTaskFactory):
         # Code source repository
         self.info.repository = "https://github.com/ViTAE-Transformer/P3M-Net"
         # Keywords used for search
-        self.info.keywords = "Portrait matting, Privacy-preserving, Semantic segmentation, Trimap"
+        self.info.keywords = "Portrait matting, Privacy-preserving, Semantic segmentation, Trimap, Pytorch"
         self.info.algo_type = core.AlgoType.INFER
         self.info.algo_tasks = "IMAGE_MATTING"
 
