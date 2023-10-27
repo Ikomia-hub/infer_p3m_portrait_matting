@@ -171,8 +171,8 @@ class InferP3mPortraitMatting(dataprocess.C2dImageTask):
             pred_coutour_1, pred_retouching_2)
 
         # Image composite
+        img = cv2.cvtColor(img.astype(np.uint8), cv2.COLOR_BGR2RGB)
         composite = generate_composite_img(img, predict)
-        composite = cv2.cvtColor(composite.astype(np.uint8), cv2.COLOR_BGR2RGB)
 
         # Mask
         predict = predict*255.0
