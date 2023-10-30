@@ -40,7 +40,7 @@ class InferP3mPortraitMattingParam(core.CWorkflowTaskParam):
         self.model_name = "resnet34"
         self.cuda = torch.cuda.is_available()
         self.method = "HYBRID"
-        self.input_size = 1024
+        self.input_size = 800
         self.update = False
 
     def set_values(self, param_map):
@@ -216,7 +216,10 @@ class InferP3mPortraitMatting(dataprocess.C2dImageTask):
         # Run inference
         with torch.no_grad():
             bin_img, portrait = self.inference(
-                self.model, input_image, param.input_size)
+                                        self.model,
+                                        input_image,
+                                        param.input_size
+            )
         param.update = False
 
         # Set output:
