@@ -26,6 +26,7 @@ from skimage.transform import resize
 from torchvision import transforms
 import numpy as np
 import gdown
+from PIL import Image
 
 
 # --------------------
@@ -136,7 +137,7 @@ class InferP3mPortraitMatting(dataprocess.C2dImageTask):
             tensor_img = torch.from_numpy(scale_img.astype(np.float32)[
                                           :, :, :]).permute(2, 0, 1)
         input_t = tensor_img
-        input_t = input_t/255.0
+        input_t = input_t / 255.0
         normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                          std=[0.229, 0.224, 0.225])
         input_t = normalize(input_t)
@@ -150,16 +151,18 @@ class InferP3mPortraitMatting(dataprocess.C2dImageTask):
 
     def inference(self, model, img, max_size):
         param = self.get_param_object()
+        max_size = max_size - (max_size % 32)
+        # Store original dimensions
         h, w, c = img.shape
+        original_h, original_w = h, w
         if param.method=='RESIZE':
             resize_h = int(h/2)
             resize_w = int(w/2)
             new_h = min(max_size, resize_h - (resize_h % 32))
             new_w = min(max_size, resize_w - (resize_w % 32))
-            scale_img = resize(img,(new_h,new_w))*255.0
+            scale_img = cv2.resize(img, (new_w, new_h), interpolation=cv2.INTER_LINEAR)
             pred_global, pred_local, pred_fusion = self.inference_once(model, scale_img)
-            pred_local = resize(pred_local,(h,w))
-            pred_global = resize(pred_global,(h,w))*255.0
+            pred_global = cv2.resize(pred_global, (w, h), interpolation=cv2.INTER_LINEAR)
             predict = resize(pred_fusion,(h,w))
 
         if param.method=='HYBRID':
@@ -169,30 +172,30 @@ class InferP3mPortraitMatting(dataprocess.C2dImageTask):
             resize_w = int(w*global_ratio)
             new_h = min(max_size, resize_h - (resize_h % 32))
             new_w = min(max_size, resize_w - (resize_w % 32))
-            scale_img = resize(img, (new_h, new_w))*255.0
+            scale_img = cv2.resize(img, (new_w, new_h), interpolation=cv2.INTER_LINEAR)
             pred_coutour_1, pred_retouching_1, pred_fusion_1 = self.inference_once(
                 model, scale_img)
             # torch.cuda.empty_cache()
-            pred_coutour_1 = resize(pred_coutour_1, (h, w))*255.0
+            pred_coutour_1 = cv2.resize(pred_coutour_1, (w, h), interpolation=cv2.INTER_LINEAR)
             resize_h = int(h*local_ratio)
             resize_w = int(w*local_ratio)
             new_h = min(max_size, resize_h - (resize_h % 32))
             new_w = min(max_size, resize_w - (resize_w % 32))
-            scale_img = resize(img, (new_h, new_w))*255.0
+            scale_img = cv2.resize(img, (new_w, new_h), interpolation=cv2.INTER_LINEAR)
             pred_coutour_2, pred_retouching_2, pred_fusion_2 = self.inference_once(
                 model, scale_img)
             # torch.cuda.empty_cache()
-            pred_retouching_2 = resize(pred_retouching_2, (h, w))
+            pred_retouching_2 = cv2.resize(pred_retouching_2, (w, h), interpolation=cv2.INTER_LINEAR)
             predict = get_masked_local_from_global_test(
                 pred_coutour_1, pred_retouching_2)
 
         # Image composite
-        img = cv2.cvtColor(img.astype(np.uint8), cv2.COLOR_BGR2RGB)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        predict = cv2.resize(predict, (original_w, original_h), interpolation=cv2.INTER_LINEAR)
         composite = generate_composite_img(img, predict)
 
         # Mask
-        predict = predict*255.0
-        predict = cv2.resize(predict, (w, h), interpolation=cv2.INTER_LINEAR)
+        predict = predict * 255.0
         return predict, composite
 
     def run(self):
