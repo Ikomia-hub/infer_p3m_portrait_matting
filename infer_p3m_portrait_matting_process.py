@@ -150,6 +150,8 @@ class InferP3mPortraitMatting(dataprocess.C2dImageTask):
 
     def inference(self, model, img, max_size):
         param = self.get_param_object()
+        max_size = max_size - (max_size % 32)
+        # Store original dimensions
         h, w, c = img.shape
         if param.method=='RESIZE':
             resize_h = int(h/2)
