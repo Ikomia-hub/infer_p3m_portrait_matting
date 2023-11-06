@@ -26,6 +26,7 @@ from skimage.transform import resize
 from torchvision import transforms
 import numpy as np
 import gdown
+from PIL import Image
 
 
 # --------------------
@@ -153,6 +154,7 @@ class InferP3mPortraitMatting(dataprocess.C2dImageTask):
         max_size = max_size - (max_size % 32)
         # Store original dimensions
         h, w, c = img.shape
+        original_h, original_w = h, w
         if param.method=='RESIZE':
             resize_h = int(h/2)
             resize_w = int(w/2)
@@ -189,7 +191,7 @@ class InferP3mPortraitMatting(dataprocess.C2dImageTask):
 
         # Image composite
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-
+        predict = cv2.resize(predict, (original_w, original_h), interpolation=cv2.INTER_LINEAR)
         composite = generate_composite_img(img, predict)
 
         # Mask
