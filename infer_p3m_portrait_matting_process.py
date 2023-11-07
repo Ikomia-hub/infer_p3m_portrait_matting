@@ -262,7 +262,8 @@ class InferP3mPortraitMattingFactory(dataprocess.CTaskFactory):
         # URL of documentation
         self.info.documentation_link = "https://arxiv.org/pdf/2104.14222.pdf"
         # Code source repository
-        self.info.repository = "https://github.com/ViTAE-Transformer/P3M-Net"
+        self.info.repository = "https://github.com/Ikomia-hub/infer_p3m_portrait_matting"
+        self.info.original_repository = "https://github.com/ViTAE-Transformer/P3M-Net"
         # Keywords used for search
         self.info.keywords = "Portrait matting, Privacy-preserving, Semantic segmentation, Trimap, Pytorch"
         self.info.algo_type = core.AlgoType.INFER
