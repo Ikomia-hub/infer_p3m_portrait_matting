@@ -49,7 +49,7 @@ wf.run_on(url="https://raw.githubusercontent.com/Ikomia-dev/notebooks/main/examp
 
 # Inspect your results
 display(algo.get_input(0).get_image())
-display(algo.get_output(0).get_image())
+display(algo.get_output(1).get_image())
 ```
 
 ## :sunny: Use with Ikomia Studio
@@ -87,8 +87,8 @@ algo.set_parameters({
 wf.run_on(url="https://raw.githubusercontent.com/Ikomia-dev/notebooks/main/examples/img/img_portrait.jpg")
 
 # Inspect your results
-display(det.get_input(0))
-display(det.get_output(1))
+display(algo.get_input(0).get_image())
+display(algo.get_output(1).get_image())
 ```
 
 ## :mag: Explore algorithm outputs
@@ -96,7 +96,6 @@ display(det.get_output(1))
 Every algorithm produces specific outputs, yet they can be explored them the same way using the Ikomia API. For a more in-depth understanding of managing algorithm outputs, please refer to the [documentation](https://ikomia-dev.github.io/python-api-documentation/advanced_guide/IO_management.html).
 
 ```python
-import ikomia
 from ikomia.dataprocess.workflow import Workflow
 
 # Init your workflow
