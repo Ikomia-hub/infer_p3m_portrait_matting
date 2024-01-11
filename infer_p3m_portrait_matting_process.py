@@ -25,7 +25,7 @@ import os
 from skimage.transform import resize
 from torchvision import transforms
 import numpy as np
-import gdown
+import requests
 from PIL import Image
 
 
@@ -114,7 +114,13 @@ class InferP3mPortraitMatting(dataprocess.C2dImageTask):
         # Download model if not exist
         if not os.path.isfile(model_weights):
             os.makedirs(model_folder, exist_ok=True)
-            gdown.download(model_url, model_weights, quiet=False)
+            model_url = utils.get_model_hub_url() + "/" + self.name + "/" + model_file_name
+            print("Downloading weights...")
+            response = requests.get(model_url, stream=True)
+            with open(model_weights, 'wb') as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    f.write(chunk)
+            print("Weights downloaded")
 
         if param.model_name == 'vitae-s':
             self.model = build_model('vitae', pretrained=False)
@@ -252,7 +258,7 @@ class InferP3mPortraitMattingFactory(dataprocess.CTaskFactory):
         self.info.short_description = "Inference of Privacy-Preserving Portrait Matting (P3M)"
         # relative path -> as displayed in Ikomia application process tree
         self.info.path = "Plugins/Python/Background"
-        self.info.version = "1.0.0"
+        self.info.version = "1.1.0"
         self.info.icon_path = "icons/icon.png"
         self.info.authors = "Ma, Sihan and Li, Jizhizi and Zhang, Jing and Zhang, He and Tao, Dacheng"
         self.info.article = "Rethinking Portrait Matting with Pirvacy Preserving"
