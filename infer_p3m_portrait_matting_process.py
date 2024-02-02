@@ -258,7 +258,7 @@ class InferP3mPortraitMattingFactory(dataprocess.CTaskFactory):
         self.info.short_description = "Inference of Privacy-Preserving Portrait Matting (P3M)"
         # relative path -> as displayed in Ikomia application process tree
         self.info.path = "Plugins/Python/Background"
-        self.info.version = "1.1.0"
+        self.info.version = "1.1.1"
         self.info.icon_path = "icons/icon.png"
         self.info.authors = "Ma, Sihan and Li, Jizhizi and Zhang, Jing and Zhang, He and Tao, Dacheng"
         self.info.article = "Rethinking Portrait Matting with Pirvacy Preserving"
