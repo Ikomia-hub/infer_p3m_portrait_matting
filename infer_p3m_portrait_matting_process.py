@@ -74,6 +74,7 @@ class InferP3mPortraitMatting(dataprocess.C2dImageTask):
         dataprocess.C2dImageTask.__init__(self, name)
         # Add input/output of the process here
         self.add_output(dataprocess.CImageIO())
+        self.add_output(dataprocess.CImageIO())
 
         # Create parameters class
         if param is None:
@@ -233,10 +234,11 @@ class InferP3mPortraitMatting(dataprocess.C2dImageTask):
         param.update = False
 
         # Set output:
-        output_bin = self.get_output(0)
+        self.forward_input_image(0, 0)
+        output_bin = self.get_output(1)
         output_bin.set_image(bin_img)
 
-        output = self.get_output(1)
+        output = self.get_output(2)
         output.set_image(portrait)
 
         # Step progress bar (Ikomia Studio):
@@ -259,7 +261,7 @@ class InferP3mPortraitMattingFactory(dataprocess.CTaskFactory):
         self.info.short_description = "Inference of Privacy-Preserving Portrait Matting (P3M)"
         # relative path -> as displayed in Ikomia application process tree
         self.info.path = "Plugins/Python/Background"
-        self.info.version = "1.1.2"
+        self.info.version = "1.2.0"
         self.info.icon_path = "icons/icon.png"
         self.info.authors = "Ma, Sihan and Li, Jizhizi and Zhang, Jing and Zhang, He and Tao, Dacheng"
         self.info.article = "Rethinking Portrait Matting with Pirvacy Preserving"
